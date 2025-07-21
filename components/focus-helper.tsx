@@ -13,6 +13,7 @@ import { Sparkles } from "lucide-react"
 import { Brain } from "lucide-react"
 import { Smartphone, Music, Users, Coffee, Tv } from "lucide-react"
 import { useAuth } from "@/lib/auth"
+import { usePlan } from "@/lib/plan-context"
 
 const commonDistractions = [
   { label: "Social Media", icon: Smartphone, color: "bg-blue-100 text-blue-700 border-blue-200" },
@@ -34,6 +35,7 @@ export default function FocusHelper({ onBack }: FocusHelperProps) {
   const [loading, setLoading] = useState(false)
   const [errorMsg, setErrorMsg] = useState("")
   const { user } = useAuth()
+  const { refreshPlan } = usePlan()
 
   const handleSubmit = async () => {
     if (!situation.trim() || !user) return
@@ -54,6 +56,7 @@ export default function FocusHelper({ onBack }: FocusHelperProps) {
       if (response.ok) {
         const data = await response.json()
         setAdvice(data.advice)
+        await refreshPlan() // Update credits after successful AI response
       } else {
         const data = await response.json()
         setErrorMsg(data.message || "Something went wrong. Please try again.")
@@ -149,11 +152,10 @@ export default function FocusHelper({ onBack }: FocusHelperProps) {
                   <button
                     key={distraction.label}
                     onClick={() => toggleDistraction(distraction.label)}
-                    className={`flex items-center justify-center p-3 rounded-xl transition-all duration-300 text-sm font-medium transform hover:scale-105 border-2 ${
-                      isSelected
+                    className={`flex items-center justify-center p-3 rounded-xl transition-all duration-300 text-sm font-medium transform hover:scale-105 border-2 ${isSelected
                         ? `${distraction.color} border-current shadow-lg scale-105`
                         : "bg-gray-50 hover:bg-gray-100 text-gray-700 border-transparent hover:border-gray-200"
-                    }`}
+                      }`}
                   >
                     <IconComponent className="h-4 w-4 mr-2" />
                     {distraction.label}

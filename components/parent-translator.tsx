@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
 import { ArrowLeft, Copy, Share, MessageCircle, Sparkles, Heart, Mail } from "lucide-react" // Added Mail icon
 import { useAuth } from "@/lib/auth"
+import { usePlan } from "@/lib/plan-context"
 
 const emotionTags = [
   {
@@ -52,6 +53,7 @@ export default function ParentTranslator({ onBack }: ParentTranslatorProps) {
   const [loading, setLoading] = useState(false)
   const [errorMsg, setErrorMsg] = useState("")
   const { user } = useAuth()
+  const { refreshPlan } = usePlan()
 
   const handleTranslate = async () => {
     if (!originalMessage.trim() || !user) return
@@ -72,6 +74,7 @@ export default function ParentTranslator({ onBack }: ParentTranslatorProps) {
       if (response.ok) {
         const data = await response.json()
         setTranslatedMessage(data.translatedMessage)
+        await refreshPlan() // Update credits after successful AI response
       } else {
         const data = await response.json()
         setErrorMsg(data.message || "Something went wrong. Please try again.")
@@ -156,11 +159,10 @@ export default function ParentTranslator({ onBack }: ParentTranslatorProps) {
                       <button
                         key={emotion.label}
                         onClick={() => toggleEmotion(emotion.label)}
-                        className={`flex items-center justify-center p-3 rounded-xl transition-all duration-300 text-sm font-medium transform hover:scale-105 border-2 ${
-                          isSelected
+                        className={`flex items-center justify-center p-3 rounded-xl transition-all duration-300 text-sm font-medium transform hover:scale-105 border-2 ${isSelected
                             ? `${emotion.color} border-current shadow-lg scale-105`
                             : `bg-gray-50 hover:bg-gray-100 text-gray-700 border-transparent ${emotion.hoverColor}`
-                        }`}
+                          }`}
                       >
                         <span className="mr-2 text-lg">{emotion.emoji}</span>
                         {emotion.label}

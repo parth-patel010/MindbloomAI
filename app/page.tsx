@@ -11,13 +11,14 @@ import OverwhelmHelper from "@/components/overwhelm-helper"
 import PlanManager from "@/components/plan-manager"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Heart, MessageCircle, Focus, Waves, Sparkles, Crown, Zap } from "lucide-react"
+import { Heart, MessageCircle, Focus, Waves, Sparkles, Crown, Zap, BookOpen } from "lucide-react"
 import { usePlan } from "@/lib/plan-context"
 import { useSearchParams } from "next/navigation"
 import { useToast } from "@/components/ui/use-toast"
+import StudyBuddy from "@/components/study-buddy"
 
 function Dashboard() {
-  const [currentView, setCurrentView] = useState<"dashboard" | "mood" | "parent" | "focus" | "overwhelm" | "plan">(
+  const [currentView, setCurrentView] = useState<"dashboard" | "mood" | "parent" | "focus" | "overwhelm" | "plan" | "studybuddy">(
     "dashboard",
   )
   const { user, logout } = useAuth()
@@ -119,6 +120,15 @@ function Dashboard() {
       bgColor: "bg-gradient-to-br from-emerald-50 to-teal-50",
       credits: 1,
     },
+    {
+      id: "studybuddy",
+      label: "Study Buddy",
+      description: "Get real-world explanations, perfect answers, and quiz yourself with an AI-powered study companion.",
+      icon: BookOpen,
+      color: "from-yellow-500 to-orange-600",
+      bgColor: "bg-gradient-to-br from-yellow-50 to-orange-50",
+      credits: 1,
+    },
   ]
 
   const handleOptionClick = (optionId: string, requiredCredits: number) => {
@@ -143,6 +153,10 @@ function Dashboard() {
 
   if (currentView === "overwhelm") {
     return <OverwhelmHelper onBack={() => setCurrentView("dashboard")} />
+  }
+
+  if (currentView === "studybuddy") {
+    return <StudyBuddy onBack={() => setCurrentView("dashboard")} />
   }
 
   if (currentView === "plan") {
@@ -176,11 +190,10 @@ function Dashboard() {
             <div className="mb-6 animate-in slide-in-from-top-4 duration-500 delay-400">
               <button
                 onClick={() => setCurrentView("plan")}
-                className={`w-full p-4 rounded-xl transition-all duration-300 transform hover:scale-105 ${
-                  currentPlan === "pro"
+                className={`w-full p-4 rounded-xl transition-all duration-300 transform hover:scale-105 ${currentPlan === "pro"
                     ? "bg-gradient-to-r from-yellow-50 to-orange-50 border-2 border-yellow-200 hover:border-yellow-300"
                     : "bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 hover:border-blue-300"
-                }`}
+                  }`}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center">
@@ -229,11 +242,9 @@ function Dashboard() {
                   key={option.id}
                   onClick={() => handleOptionClick(option.id, option.credits)}
                   disabled={!canUse && currentPlan === "free"}
-                  className={`w-full text-left p-5 rounded-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-xl ${
-                    option.bgColor
-                  } border border-white/50 animate-in slide-in-from-left-4 duration-500 ${
-                    canUse ? "opacity-100" : "opacity-60"
-                  }`}
+                  className={`w-full text-left p-5 rounded-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-xl ${option.bgColor
+                    } border border-white/50 animate-in slide-in-from-left-4 duration-500 ${canUse ? "opacity-100" : "opacity-60"
+                    }`}
                   style={{ animationDelay: `${700 + index * 100}ms` }}
                 >
                   <div className="flex items-center">

@@ -1,27 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { sql } from "@/lib/database"
-import { GoogleGenerativeAI } from "@google/generative-ai"
-
-const DEFAULT_MODEL = process.env.GEMINI_MODEL || "gemini-1.5-flash"
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
-
-const SYSTEM_PROMPT = `You are a professor at MindBloom University, an expert in all subjects. You give perfect explanations deeply connected with real-world examples so your student will understand better. At the end, you give the student a few questions to test their understanding, and then suggest what they can learn next!`
-
-async function safeGenerateChat(messages: { role: string; content: string }[]) {
-    try {
-        // Gemini expects the first message to be a system prompt (role: "user" is fine, but we use "user" for all)
-        const formatted = [
-            { role: "user", parts: [{ text: SYSTEM_PROMPT }] },
-            ...messages.map(m => ({ role: m.role, parts: [{ text: m.content }] }))
-        ]
-        const model = genAI.getGenerativeModel({ model: DEFAULT_MODEL })
-        const result = await model.generateContent({ contents: formatted })
-        return result.response.text()
-    } catch (err) {
-        console.error("Gemini chat failed:", err)
-        throw new Error(err instanceof Error ? err.message : "Unknown Gemini error")
-    }
-}
+import { generateStudyBuddyAnswer } from "@/lib/gemini"
 
 function formatGeminiAnswer(answer: string): string {
     // Bold: Replace **word** with <b>word</b>
@@ -65,7 +44,7 @@ export async function POST(request: NextRequest) {
         // Generate answer from Gemini
         let answer = ""
         try {
-            answer = await safeGenerateChat(messages)
+            answer = await generateStudyBuddyAnswer(messages)
             answer = formatGeminiAnswer(answer)
         } catch (err) {
             // Refund credits if AI fails

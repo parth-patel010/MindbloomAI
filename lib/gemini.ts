@@ -7,12 +7,12 @@ function looksLikeApiKey(value: string | undefined) {
 const DEFAULT_MODEL = !looksLikeApiKey(process.env.GEMINI_MODEL)
   ? process.env.GEMINI_MODEL || "gemini-1.5-flash"
   : (() => {
-      console.warn(
-        "[Gemini] GEMINI_MODEL env-var appears to be an API key, ignoring it. " +
-          "Set GEMINI_MODEL to a valid model name like 'gemini-1.5-pro-latest'.",
-      )
-      return "gemini-1.5-flash"
-    })()
+    console.warn(
+      "[Gemini] GEMINI_MODEL env-var appears to be an API key, ignoring it. " +
+      "Set GEMINI_MODEL to a valid model name like 'gemini-1.5-pro-latest'.",
+    )
+    return "gemini-1.5-flash"
+  })()
 
 if (!process.env.GEMINI_API_KEY || looksLikeApiKey(DEFAULT_MODEL)) {
   throw new Error("GEMINI_API_KEY is missing or GEMINI_MODEL is misconfigured. " + "Verify your environment variables.")
@@ -122,4 +122,21 @@ export async function generateQuizQuestions(subject: string, difficulty: string)
 export async function generateStudyPlan(subjects: string[], availableHours: number, preferences: string) {
   const prompt = `Create a balanced study plan for subjects: ${subjects.join(", ")} with ${availableHours} hours available. Student preferences: ${preferences}. Include break times and variety. Format as a structured daily schedule.`
   return safeGenerate(prompt)
+}
+
+export async function generateStudyBuddyAnswer(messages: { role: string; content: string }[]): Promise<string> {
+  const SYSTEM_PROMPT = `You are a professor at MindBloom University, an expert in all subjects. You give perfect explanations deeply connected with real-world examples so your student will understand better. At the end, you give the student a few questions to test their understanding, and then suggest what they can learn next!`;
+  // Gemini expects chat as [{role, parts: [{text}]}]
+  const formatted = [
+    { role: "user", parts: [{ text: SYSTEM_PROMPT }] },
+    ...messages.map(m => ({ role: m.role, parts: [{ text: m.content }] }))
+  ];
+  try {
+    const model = genAI.getGenerativeModel({ model: DEFAULT_MODEL });
+    const result = await model.generateContent({ contents: formatted });
+    return result.response.text();
+  } catch (err) {
+    console.error("Gemini Study Buddy chat failed:", err);
+    throw new Error(err instanceof Error ? err.message : "Unknown Gemini error");
+  }
 }

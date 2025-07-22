@@ -274,9 +274,7 @@ export default function StudyBuddy({ onBack }: StudyBuddyProps) {
                                                     <Button variant="outline" size="sm" onClick={handleCopy}>
                                                         Copy
                                                     </Button>
-                                                    <Button variant="default" size="sm" onClick={handleDownload}>
-                                                        Download PDF
-                                                    </Button>
+
                                                 </div>
                                             </CardContent>
                                         </Card>
@@ -296,7 +294,7 @@ export default function StudyBuddy({ onBack }: StudyBuddyProps) {
                                         <Sparkles className="h-4 w-4 text-orange-500" /> MindBloom
                                     </span>
                                 </div>
-                                <div className="rounded-xl px-4 py-2 max-w-[80%] bg-orange-100 border-2 border-orange-400 flex items-center">
+                                <div className="rounded-xl px-4 py-2 max-w-[100%] bg-orange-100 border-2 border-orange-400 flex items-center">
                                     <Loader2 className="h-4 w-4 mr-2 animate-spin text-orange-500" />
                                     Thinking{thinkingTime > 0 && <span className="ml-1">({thinkingTime}s)</span>}...
                                 </div>

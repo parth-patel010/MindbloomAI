@@ -127,7 +127,7 @@ function Dashboard() {
       icon: BookOpen,
       color: "from-yellow-500 to-orange-600",
       bgColor: "bg-gradient-to-br from-yellow-50 to-orange-50",
-      credits: 1,
+      credits: 2,
     },
   ]
 

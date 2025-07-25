@@ -16,6 +16,7 @@ import { usePlan } from "@/lib/plan-context"
 import { useSearchParams } from "next/navigation"
 import { useToast } from "@/components/ui/use-toast"
 import StudyBuddy from "@/components/study-buddy"
+import { motion } from "framer-motion"
 
 function Dashboard() {
   const [currentView, setCurrentView] = useState<"dashboard" | "mood" | "parent" | "focus" | "overwhelm" | "plan" | "studybuddy">(
@@ -164,120 +165,124 @@ function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-teal-50 via-blue-50 to-purple-50 p-4 sm:p-6 md:p-8 flex items-center justify-center">
-      <Card className="w-full max-w-md mx-auto bg-white/90 backdrop-blur-sm border-0 shadow-2xl animate-in slide-in-from-bottom-4 duration-500">
-        <CardContent className="p-6 sm:p-8">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <div className="flex justify-center mb-4 animate-in zoom-in-50 duration-500">
-              <div className="relative">
-                <div className="w-16 h-16 rounded-2xl shadow-lg bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center">
-                  <Sparkles className="h-8 w-8 text-white" />
-                </div>
-                <div className="absolute -top-1 -right-1 w-6 h-6 bg-gradient-to-r from-pink-400 to-purple-500 rounded-full flex items-center justify-center animate-pulse">
-                  <Sparkles className="h-3 w-3 text-white" />
-                </div>
+    <div className="min-h-screen min-w-full bg-white p-0 m-0">
+      <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, type: 'spring', bounce: 0.4 }}>
+        <Card className="w-full min-h-screen h-full bg-white border-0 shadow-2xl animate-in slide-in-from-bottom-4 duration-500 rounded-none">
+          <CardContent className="p-6 sm:p-8">
+            {/* Header */}
+            <div className="text-center mb-8">
+              <div className="flex justify-center mb-4 animate-in zoom-in-50 duration-500">
+                <motion.div initial={{ scale: 0.7 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 200, damping: 10 }} className="relative">
+                  <div className="w-16 h-16 rounded-2xl shadow-lg bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center">
+                    <Sparkles className="h-8 w-8 text-white" />
+                  </div>
+                  <div className="absolute -top-1 -right-1 w-6 h-6 bg-gradient-to-r from-pink-400 to-purple-500 rounded-full flex items-center justify-center animate-pulse">
+                    <Sparkles className="h-3 w-3 text-white" />
+                  </div>
+                </motion.div>
               </div>
-            </div>
-            <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-teal-600 to-blue-600 bg-clip-text text-transparent mb-2 animate-in slide-in-from-top-4 duration-500 delay-200">
-              MindBloom
-            </h1>
-            <p className="text-gray-600 text-sm sm:text-base mb-6 animate-in slide-in-from-top-4 duration-500 delay-300">
-              Where student minds thrive ✨
-            </p>
+              <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-teal-600 to-blue-600 bg-clip-text text-transparent mb-2 animate-in slide-in-from-top-4 duration-500 delay-200">
+                MindBloom
+              </h1>
+              <p className="text-gray-600 text-sm sm:text-base mb-6 animate-in slide-in-from-top-4 duration-500 delay-300">
+                Where student minds thrive ✨
+              </p>
 
-            {/* Current Plan Display */}
-            <div className="mb-6 animate-in slide-in-from-top-4 duration-500 delay-400">
-              <button
-                onClick={() => setCurrentView("plan")}
-                className={`w-full p-4 rounded-xl transition-all duration-300 transform hover:scale-105 ${currentPlan === "pro"
+              {/* Current Plan Display */}
+              <div className="mb-6 animate-in slide-in-from-top-4 duration-500 delay-400">
+                <button
+                  onClick={() => setCurrentView("plan")}
+                  className={`w-full p-4 rounded-xl transition-all duration-300 transform hover:scale-105 ${currentPlan === "pro"
                     ? "bg-gradient-to-r from-yellow-50 to-orange-50 border-2 border-yellow-200 hover:border-yellow-300"
                     : "bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 hover:border-blue-300"
-                  }`}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    {currentPlan === "pro" ? (
-                      <Crown className="h-5 w-5 text-yellow-600 mr-2" />
-                    ) : (
-                      <Zap className="h-5 w-5 text-blue-600 mr-2" />
-                    )}
-                    <div className="text-left">
-                      <div className="font-semibold text-gray-800">
-                        {currentPlan === "pro" ? "Pro Plan" : "Free Plan"}
-                      </div>
-                      <div className="text-sm text-gray-600">
-                        {planLoading ? "Loading..." : `${credits} credits remaining`}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-xs text-gray-500">Tap to manage</div>
-                  </div>
-                </div>
-              </button>
-            </div>
-
-            <div className="flex flex-col sm:flex-row justify-between items-center mb-6 p-3 bg-gradient-to-r from-teal-50 to-blue-50 rounded-xl animate-in slide-in-from-top-4 duration-500 delay-500">
-              <span className="text-sm text-gray-600 mb-2 sm:mb-0">
-                Welcome back, <span className="font-semibold text-teal-600">{user?.name}</span> 👋
-              </span>
-              <Button variant="ghost" size="sm" onClick={logout} className="text-gray-500 hover:text-gray-700">
-                Sign Out
-              </Button>
-            </div>
-
-            <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 mb-6 animate-in slide-in-from-top-4 duration-500 delay-600">
-              How can we support your mind today? 💙
-            </h2>
-          </div>
-
-          {/* Support Options */}
-          <div className="space-y-4">
-            {supportOptions.map((option, index) => {
-              const IconComponent = option.icon
-              const canUse = credits >= option.credits
-              return (
-                <button
-                  key={option.id}
-                  onClick={() => handleOptionClick(option.id, option.credits)}
-                  disabled={!canUse && currentPlan === "free"}
-                  className={`w-full text-left p-5 rounded-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-xl ${option.bgColor
-                    } border border-white/50 animate-in slide-in-from-left-4 duration-500 ${canUse ? "opacity-100" : "opacity-60"
                     }`}
-                  style={{ animationDelay: `${700 + index * 100}ms` }}
                 >
-                  <div className="flex items-center">
-                    <div className={`p-3 rounded-xl bg-gradient-to-r ${option.color} text-white shadow-lg mr-4`}>
-                      <IconComponent className="h-6 w-6" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="font-semibold text-gray-800 text-lg mb-1 flex items-center flex-wrap">
-                        {option.label}
-                        <span className="ml-2 text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full mt-1 sm:mt-0">
-                          {option.credits} credit{option.credits > 1 ? "s" : ""}
-                        </span>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      {currentPlan === "pro" ? (
+                        <Crown className="h-5 w-5 text-yellow-600 mr-2" />
+                      ) : (
+                        <Zap className="h-5 w-5 text-blue-600 mr-2" />
+                      )}
+                      <div className="text-left">
+                        <div className="font-semibold text-gray-800">
+                          {currentPlan === "pro" ? "Pro Plan" : "Free Plan"}
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          {planLoading ? "Loading..." : `${credits} credits remaining`}
+                        </div>
                       </div>
-                      <div className="text-sm text-gray-600">{option.description}</div>
-                      {!canUse && <div className="text-xs text-red-500 mt-1">Not enough credits - Upgrade to Pro</div>}
                     </div>
-                    <div className="text-gray-400">
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
+                    <div className="text-right">
+                      <div className="text-xs text-gray-500">Tap to manage</div>
                     </div>
                   </div>
                 </button>
-              )
-            })}
-          </div>
+              </div>
 
-          {/* Footer Message */}
-          <div className="mt-8 text-center p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-100 animate-in slide-in-from-bottom-4 duration-500 delay-1000">
-            <p className="text-sm text-gray-600">Remember: You're not alone in this journey 🌱</p>
-          </div>
-        </CardContent>
-      </Card>
+              <div className="flex flex-col sm:flex-row justify-between items-center mb-6 p-3 bg-gradient-to-r from-teal-50 to-blue-50 rounded-xl animate-in slide-in-from-top-4 duration-500 delay-500">
+                <span className="text-sm text-gray-600 mb-2 sm:mb-0">
+                  Welcome back, <span className="font-semibold text-teal-600">{user?.name}</span> 👋
+                </span>
+                <Button variant="ghost" size="sm" onClick={logout} className="text-gray-500 hover:text-gray-700">
+                  Sign Out
+                </Button>
+              </div>
+
+              <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 mb-6 animate-in slide-in-from-top-4 duration-500 delay-600">
+                How can we support your mind today? 💙
+              </h2>
+            </div>
+
+            {/* Support Options */}
+            <div className="space-y-4">
+              {supportOptions.map((option, index) => {
+                const IconComponent = option.icon
+                const canUse = credits >= option.credits
+                return (
+                  <motion.button
+                    key={option.id}
+                    onClick={() => handleOptionClick(option.id, option.credits)}
+                    disabled={!canUse && currentPlan === "free"}
+                    whileHover={{ scale: 1.05, rotate: 1 }}
+                    whileTap={{ scale: 0.97, rotate: -1 }}
+                    className={`w-full text-left p-6 rounded-3xl transition-all duration-300 transform hover:scale-105 hover:shadow-2xl ${option.bgColor
+                      } border border-white/50 animate-in slide-in-from-left-4 duration-500 ${canUse ? "opacity-100" : "opacity-60"
+                      }`}
+                    style={{ animationDelay: `${700 + index * 100}ms` }}
+                  >
+                    <div className="flex items-center">
+                      <div className={`p-3 rounded-xl bg-gradient-to-r ${option.color} text-white shadow-lg mr-4`}>
+                        <IconComponent className="h-7 w-7" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="font-semibold text-gray-800 text-lg mb-1 flex items-center flex-wrap">
+                          {option.label}
+                          <span className="ml-2 text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full mt-1 sm:mt-0">
+                            {option.credits} credit{option.credits > 1 ? "s" : ""}
+                          </span>
+                        </div>
+                        <div className="text-sm text-gray-600">{option.description}</div>
+                        {!canUse && <div className="text-xs text-red-500 mt-1">Not enough credits - Upgrade to Pro</div>}
+                      </div>
+                      <div className="text-gray-400">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </div>
+                    </div>
+                  </motion.button>
+                )
+              })}
+            </div>
+
+            {/* Footer Message */}
+            <div className="mt-8 text-center p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-100 animate-in slide-in-from-bottom-4 duration-500 delay-1000">
+              <p className="text-sm text-gray-600">Remember: You're not alone in this journey 🌱</p>
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
     </div>
   )
 }

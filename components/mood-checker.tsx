@@ -129,9 +129,9 @@ export default function MoodChecker({ onBack }: MoodCheckerProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50 p-4 sm:p-6 flex items-center justify-center">
-      <Card className="w-full max-w-md mx-auto bg-white/90 backdrop-blur-sm border-0 shadow-2xl animate-in slide-in-from-bottom-4 duration-500">
-        <CardHeader className="bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-t-lg">
+    <div className="min-h-screen min-w-full bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50 p-0 m-0">
+      <Card className="w-full min-h-screen h-full bg-white/90 backdrop-blur-sm border-0 shadow-2xl animate-in slide-in-from-bottom-4 duration-500 rounded-none">
+        <CardHeader className="bg-gradient-to-r from-pink-500 to-purple-600 text-white">
           <div className="flex items-center">
             <Button variant="ghost" size="icon" onClick={onBack} className="text-white hover:bg-white/20">
               <ArrowLeft className="h-5 w-5" />
@@ -151,11 +151,10 @@ export default function MoodChecker({ onBack }: MoodCheckerProps) {
                 <button
                   key={index}
                   onClick={() => setSelectedMood(index)}
-                  className={`text-5xl p-3 rounded-full transition-all duration-300 transform hover:scale-110 ${
-                    selectedMood === index
-                      ? "bg-gradient-to-r from-pink-100 to-purple-100 scale-110 shadow-lg ring-4 ring-pink-200"
-                      : "hover:bg-gray-100 hover:shadow-md"
-                  }`}
+                  className={`text-5xl p-3 rounded-full transition-all duration-300 transform hover:scale-110 ${selectedMood === index
+                    ? "bg-gradient-to-r from-pink-100 to-purple-100 scale-110 shadow-lg ring-4 ring-pink-200"
+                    : "hover:bg-gray-100 hover:shadow-md"
+                    }`}
                 >
                   {emoji}
                 </button>
@@ -202,11 +201,10 @@ export default function MoodChecker({ onBack }: MoodCheckerProps) {
                 <button
                   key={index}
                   onClick={() => toggleActivity(activity.label)}
-                  className={`w-full flex items-center p-4 rounded-xl transition-all duration-300 transform hover:scale-105 ${
-                    isSelected
-                      ? `${activity.color} border-2 border-current shadow-lg scale-105`
-                      : `bg-gray-50 hover:bg-gray-100 border-2 border-transparent ${activity.hoverColor} hover:shadow-md`
-                  }`}
+                  className={`w-full flex items-center p-4 rounded-xl transition-all duration-300 transform hover:scale-105 ${isSelected
+                    ? `${activity.color} border-2 border-current shadow-lg scale-105`
+                    : `bg-gray-50 hover:bg-gray-100 border-2 border-transparent ${activity.hoverColor} hover:shadow-md`
+                    }`}
                 >
                   <div className={`p-3 rounded-xl mr-4 ${isSelected ? "bg-white/30" : activity.color}`}>
                     <IconComponent className="h-5 w-5" />

@@ -216,10 +216,10 @@ export default function AuthForm() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 flex items-center justify-center p-4 sm:p-6">
+    <div className="min-h-screen min-w-full bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 p-0 m-0">
       <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
 
-      <Card className="w-full max-w-md mx-auto bg-white/95 backdrop-blur-xl border-0 shadow-2xl animate-in slide-in-from-bottom-4 duration-700 relative overflow-hidden">
+      <Card className="w-full min-h-screen h-full bg-white/95 backdrop-blur-xl border-0 shadow-2xl animate-in slide-in-from-bottom-4 duration-700 relative overflow-hidden rounded-none">
         {/* Decorative elements */}
         <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div>
         <div className="absolute -top-10 -right-10 w-20 h-20 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full opacity-20 animate-pulse"></div>
@@ -271,11 +271,10 @@ export default function AuthForm() {
                       setName(e.target.value)
                       validateField("name", e.target.value)
                     }}
-                    className={`pl-10 bg-white/70 border-2 transition-all duration-200 ${
-                      validationErrors.name
-                        ? "border-red-300 focus:border-red-500"
-                        : "border-gray-200 focus:border-purple-400"
-                    } rounded-xl h-12`}
+                    className={`pl-10 bg-white/70 border-2 transition-all duration-200 ${validationErrors.name
+                      ? "border-red-300 focus:border-red-500"
+                      : "border-gray-200 focus:border-purple-400"
+                      } rounded-xl h-12`}
                     disabled={loading}
                   />
                 </div>
@@ -299,11 +298,10 @@ export default function AuthForm() {
                     setEmail(e.target.value)
                     validateField("email", e.target.value)
                   }}
-                  className={`pl-10 bg-white/70 border-2 transition-all duration-200 ${
-                    validationErrors.email
-                      ? "border-red-300 focus:border-red-500"
-                      : "border-gray-200 focus:border-purple-400"
-                  } rounded-xl h-12`}
+                  className={`pl-10 bg-white/70 border-2 transition-all duration-200 ${validationErrors.email
+                    ? "border-red-300 focus:border-red-500"
+                    : "border-gray-200 focus:border-purple-400"
+                    } rounded-xl h-12`}
                   disabled={loading}
                 />
                 {email && !validationErrors.email && (
@@ -329,11 +327,10 @@ export default function AuthForm() {
                     setPassword(e.target.value)
                     validateField("password", e.target.value)
                   }}
-                  className={`pl-10 pr-12 bg-white/70 border-2 transition-all duration-200 ${
-                    validationErrors.password
-                      ? "border-red-300 focus:border-red-500"
-                      : "border-gray-200 focus:border-purple-400"
-                  } rounded-xl h-12`}
+                  className={`pl-10 pr-12 bg-white/70 border-2 transition-all duration-200 ${validationErrors.password
+                    ? "border-red-300 focus:border-red-500"
+                    : "border-gray-200 focus:border-purple-400"
+                    } rounded-xl h-12`}
                   disabled={loading}
                 />
                 <button
@@ -351,15 +348,14 @@ export default function AuthForm() {
                   <div className="flex items-center justify-between text-xs">
                     <span className="text-gray-600">Password Strength</span>
                     <span
-                      className={`font-medium ${
-                        passwordStrength.score <= 2
-                          ? "text-red-500"
-                          : passwordStrength.score <= 3
-                            ? "text-yellow-500"
-                            : passwordStrength.score <= 4
-                              ? "text-blue-500"
-                              : "text-green-500"
-                      }`}
+                      className={`font-medium ${passwordStrength.score <= 2
+                        ? "text-red-500"
+                        : passwordStrength.score <= 3
+                          ? "text-yellow-500"
+                          : passwordStrength.score <= 4
+                            ? "text-blue-500"
+                            : "text-green-500"
+                        }`}
                     >
                       {getStrengthText(passwordStrength.score)}
                     </span>

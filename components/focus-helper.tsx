@@ -79,7 +79,7 @@ export default function FocusHelper({ onBack }: FocusHelperProps) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4 sm:p-6 flex items-center justify-center">
         <Card className="w-full max-w-md mx-auto bg-white/90 backdrop-blur-sm border-0 shadow-2xl animate-in slide-in-from-bottom-4 duration-500">
-          <CardHeader className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-t-lg">
+          <CardHeader className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white">
             <div className="flex items-center">
               <Button variant="ghost" size="icon" onClick={onBack} className="text-white hover:bg-white/20">
                 <ArrowLeft className="h-5 w-5" />
@@ -113,9 +113,9 @@ export default function FocusHelper({ onBack }: FocusHelperProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4 sm:p-6 flex items-center justify-center">
-      <Card className="w-full max-w-md mx-auto bg-white/90 backdrop-blur-sm border-0 shadow-2xl animate-in slide-in-from-bottom-4 duration-500">
-        <CardHeader className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-t-lg">
+    <div className="min-h-screen min-w-full bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-0 m-0">
+      <Card className="w-full min-h-screen h-full bg-white/90 backdrop-blur-sm border-0 shadow-2xl animate-in slide-in-from-bottom-4 duration-500 rounded-none">
+        <CardHeader className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white">
           <div className="flex items-center">
             <Button variant="ghost" size="icon" onClick={onBack} className="text-white hover:bg-white/20">
               <ArrowLeft className="h-5 w-5" />
@@ -153,8 +153,8 @@ export default function FocusHelper({ onBack }: FocusHelperProps) {
                     key={distraction.label}
                     onClick={() => toggleDistraction(distraction.label)}
                     className={`flex items-center justify-center p-3 rounded-xl transition-all duration-300 text-sm font-medium transform hover:scale-105 border-2 ${isSelected
-                        ? `${distraction.color} border-current shadow-lg scale-105`
-                        : "bg-gray-50 hover:bg-gray-100 text-gray-700 border-transparent hover:border-gray-200"
+                      ? `${distraction.color} border-current shadow-lg scale-105`
+                      : "bg-gray-50 hover:bg-gray-100 text-gray-700 border-transparent hover:border-gray-200"
                       }`}
                   >
                     <IconComponent className="h-4 w-4 mr-2" />

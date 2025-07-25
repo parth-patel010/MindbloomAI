@@ -232,97 +232,87 @@ export default function StudyBuddy({ onBack }: StudyBuddyProps) {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-orange-50 to-pink-50 p-4 sm:p-6 flex items-center justify-center">
-            <Card className="w-full max-w-md mx-auto bg-white/90 backdrop-blur-sm border-0 shadow-2xl animate-in slide-in-from-bottom-4 duration-500">
-                <CardHeader className="bg-gradient-to-r from-yellow-500 to-orange-600 text-white rounded-t-lg">
-                    <div className="flex items-center">
-                        <Button variant="ghost" size="icon" onClick={onBack} className="text-white hover:bg-white/20">
-                            <ArrowLeft className="h-5 w-5" />
-                        </Button>
-                        <CardTitle className="ml-2 flex items-center text-lg sm:text-xl">
-                            <BookOpen className="h-5 w-5 mr-2 animate-pulse" />
-                            Study Buddy
-                        </CardTitle>
+        <div className="flex flex-col min-h-screen bg-gradient-to-br from-yellow-50 via-orange-50 to-pink-50">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-yellow-500 to-orange-600 text-white px-4 py-3 flex items-center gap-2 shadow-sm sticky top-0 z-10">
+                <Button variant="ghost" size="icon" onClick={onBack} className="text-white hover:bg-white/20">
+                    <ArrowLeft className="h-5 w-5" />
+                </Button>
+                <span className="ml-2 flex items-center text-lg sm:text-xl font-semibold">
+                    <BookOpen className="h-5 w-5 mr-2 animate-pulse" />
+                    Study Buddy
+                </span>
+            </div>
+            {/* Chat messages area */}
+            <div className="flex-1 overflow-y-auto px-2 py-4 sm:px-4 space-y-4">
+                {messages.length === 0 && (
+                    <div className="bg-gradient-to-r from-yellow-50 to-orange-50 p-6 rounded-xl border border-yellow-100 shadow-inner text-gray-700 text-base mt-8">
+                        <Sparkles className="h-5 w-5 text-orange-500 mr-2 animate-pulse inline" />
+                        Ask any question to your Study Buddy!<br />
+                        Get real-world explanations, perfect answers, and quiz yourself with an AI-powered study companion.<br />
+                        <span className="text-xs text-orange-600">Each prompt uses 2 credits.</span>
                     </div>
-                </CardHeader>
-                <CardContent className="p-6 sm:p-8 space-y-6 flex flex-col h-[70vh]">
-                    <div className="flex-1 overflow-y-auto mb-4 space-y-4">
-                        {messages.length === 0 && (
-                            <div className="bg-gradient-to-r from-yellow-50 to-orange-50 p-6 rounded-xl border border-yellow-100 shadow-inner text-gray-700 text-base">
-                                <Sparkles className="h-5 w-5 text-orange-500 mr-2 animate-pulse inline" />
-                                Ask any question to your Study Buddy!<br />
-                                Get real-world explanations, perfect answers, and quiz yourself with an AI-powered study companion.<br />
-                                <span className="text-xs text-orange-600">Each prompt uses 2 credits.</span>
-                            </div>
-                        )}
-                        {messages.map((msg, idx) => (
-                            <div key={idx} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} items-end`}>
-                                <div
-                                    ref={msg.role === "assistant" && idx === messages.length - 1 ? lastAiRef : undefined}
-                                    className={`rounded-xl px-4 py-2 max-w-[80%] shadow ${msg.role === "user" ? "bg-yellow-100 text-right" : "bg-orange-100 border-2 border-orange-400 text-left"}`}
-                                >
-                                    {msg.role === "assistant" ? (
-                                        <Card className="bg-orange-50 border-orange-200 shadow-md mb-4">
-                                            <CardHeader className="flex flex-row items-center gap-2 pb-2">
-                                                <Sparkles className="text-orange-500 w-5 h-5" />
-                                                <span className="font-bold text-orange-600 text-base">MindBloom</span>
-                                            </CardHeader>
-                                            <CardContent className="text-base text-gray-900 space-y-2">
-                                                {/* Render AI message content here */}
-                                                {parseAnswer(msg.content)}
-                                                <div className="flex gap-2 mt-4">
-                                                    <Button variant="outline" size="sm" onClick={handleCopy}>
-                                                        Copy
-                                                    </Button>
-
-                                                </div>
-                                            </CardContent>
-                                        </Card>
-                                    ) : (
-                                        <span className="flex flex-col items-end">
-                                            <span className="text-xs text-yellow-700 font-semibold mb-1">You</span>
-                                            {msg.content}
-                                        </span>
-                                    )}
+                )}
+                {messages.map((msg, idx) => (
+                    <div key={idx} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} items-end`}>
+                        <div
+                            ref={msg.role === "assistant" && idx === messages.length - 1 ? lastAiRef : undefined}
+                            className={`rounded-xl px-4 py-2 max-w-[100%] shadow ${msg.role === "user" ? "bg-yellow-100 text-right" : "bg-orange-100 border-2 border-orange-400 text-left"}`}
+                        >
+                            {msg.role === "assistant" ? (
+                                <div className="bg-orange-50 border-orange-200 shadow-md mb-2 p-3 rounded-xl">
+                                    <div className="flex flex-row items-center gap-2 pb-2">
+                                        <Sparkles className="text-orange-500 w-5 h-5" />
+                                        <span className="font-bold text-orange-600 text-base">MindBloom</span>
+                                    </div>
+                                    <div className="text-base text-gray-900 space-y-2">
+                                        {parseAnswer(msg.content)}
+                                        <div className="flex gap-2 mt-4">
+                                            <Button variant="outline" size="sm" onClick={handleCopy}>
+                                                Copy
+                                            </Button>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
-                        {loading && (
-                            <div className="flex items-start">
-                                <div className="flex flex-col items-start mr-2">
-                                    <span className="flex items-center gap-1 text-xs text-orange-700 font-semibold mb-1">
-                                        <Sparkles className="h-4 w-4 text-orange-500" /> MindBloom
-                                    </span>
-                                </div>
-                                <div className="rounded-xl px-4 py-2 max-w-[100%] bg-orange-100 border-2 border-orange-400 flex items-center">
-                                    <Loader2 className="h-4 w-4 mr-2 animate-spin text-orange-500" />
-                                    Thinking{thinkingTime > 0 && <span className="ml-1">({thinkingTime}s)</span>}...
-                                </div>
-                            </div>
-                        )}
+                            ) : (
+                                <span className="flex flex-col items-end">
+                                    <span className="text-xs text-yellow-700 font-semibold mb-1">You</span>
+                                    {msg.content}
+                                </span>
+                            )}
+                        </div>
                     </div>
-                    {error && <div className="text-red-600 text-sm mb-2">{error}</div>}
-                    <form onSubmit={handleSend} className="flex gap-2 mt-auto">
-                        <Input
-                            ref={inputRef}
-                            value={input}
-                            onChange={e => setInput(e.target.value)}
-                            placeholder="Type your question or say 'quiz me'..."
-                            disabled={loading}
-                            className="flex-1 bg-white/80 border-yellow-200 focus:border-orange-400 focus:ring-orange-200 rounded-xl"
-                        />
-                        <Button type="submit" disabled={loading || !input.trim()} className="bg-gradient-to-r from-yellow-500 to-orange-600 hover:from-yellow-600 hover:to-orange-700 text-white shadow-lg">
-                            {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
-                        </Button>
-                    </form>
-                    <Button
-                        onClick={onBack}
-                        className="w-full bg-gradient-to-r from-yellow-500 to-orange-600 hover:from-yellow-600 hover:to-orange-700 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 mt-4"
-                    >
-                        Back to Dashboard
-                    </Button>
-                </CardContent>
-            </Card>
+                ))}
+                {loading && (
+                    <div className="flex items-start">
+                        <div className="flex flex-col items-start mr-2">
+                            <span className="flex items-center gap-1 text-xs text-orange-700 font-semibold mb-1">
+                                <Sparkles className="h-4 w-4 text-orange-500" /> MindBloom
+                            </span>
+                        </div>
+                        <div className="rounded-xl px-4 py-2 max-w-[100%] bg-orange-100 border-2 border-orange-400 flex items-center">
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin text-orange-500" />
+                            Thinking{thinkingTime > 0 && <span className="ml-1">({thinkingTime}s)</span>}...
+                        </div>
+                    </div>
+                )}
+            </div>
+            {/* Input bar at the bottom */}
+            <form onSubmit={handleSend} className="sticky bottom-0 z-20 w-full bg-transparent px-2 py-3 flex gap-2 items-center">
+                <div className="flex-1">
+                    <Input
+                        ref={inputRef}
+                        value={input}
+                        onChange={e => setInput(e.target.value)}
+                        placeholder="Type your question or say 'quiz me'..."
+                        disabled={loading}
+                        className="w-full bg-white/90 border-yellow-200 focus:border-orange-400 focus:ring-orange-200 rounded-2xl shadow-md px-4 py-3 text-base"
+                    />
+                </div>
+                <Button type="submit" disabled={loading || !input.trim()} className="bg-gradient-to-r from-yellow-500 to-orange-600 hover:from-yellow-600 hover:to-orange-700 text-white shadow-lg rounded-2xl p-0 w-12 h-12 flex items-center justify-center">
+                    {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
+                </Button>
+            </form>
         </div>
     )
 } 

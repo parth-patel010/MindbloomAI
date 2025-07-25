@@ -118,9 +118,9 @@ export default function ParentTranslator({ onBack }: ParentTranslatorProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-teal-50 via-green-50 to-blue-50 p-4 sm:p-6 flex items-center justify-center">
-      <Card className="w-full max-w-md mx-auto bg-white/90 backdrop-blur-sm border-0 shadow-2xl animate-in slide-in-from-bottom-4 duration-500">
-        <CardHeader className="bg-gradient-to-r from-teal-500 to-green-600 text-white rounded-t-lg">
+    <div className="min-h-screen min-w-full bg-gradient-to-br from-teal-50 via-green-50 to-blue-50 p-0 m-0">
+      <Card className="w-full min-h-screen h-full bg-white/90 backdrop-blur-sm border-0 shadow-2xl animate-in slide-in-from-bottom-4 duration-500 rounded-none">
+        <CardHeader className="bg-gradient-to-r from-teal-500 to-green-600 text-white">
           <div className="flex items-center">
             <Button variant="ghost" size="icon" onClick={onBack} className="text-white hover:bg-white/20">
               <ArrowLeft className="h-5 w-5" />
@@ -160,8 +160,8 @@ export default function ParentTranslator({ onBack }: ParentTranslatorProps) {
                         key={emotion.label}
                         onClick={() => toggleEmotion(emotion.label)}
                         className={`flex items-center justify-center p-3 rounded-xl transition-all duration-300 text-sm font-medium transform hover:scale-105 border-2 ${isSelected
-                            ? `${emotion.color} border-current shadow-lg scale-105`
-                            : `bg-gray-50 hover:bg-gray-100 text-gray-700 border-transparent ${emotion.hoverColor}`
+                          ? `${emotion.color} border-current shadow-lg scale-105`
+                          : `bg-gray-50 hover:bg-gray-100 text-gray-700 border-transparent ${emotion.hoverColor}`
                           }`}
                       >
                         <span className="mr-2 text-lg">{emotion.emoji}</span>

@@ -26,6 +26,7 @@ export async function POST(req: NextRequest) {
         }
 
         const payment = paymentRecord[0];
+        console.log('Found payment record:', payment);
 
         // Update payment status based on webhook data
         let dbStatus = 'pending';
@@ -34,6 +35,8 @@ export async function POST(req: NextRequest) {
         } else if (status === 'FAILED' || status === 'ERROR') {
             dbStatus = 'failed';
         }
+
+        console.log(`Updating payment status to: ${dbStatus}`);
 
         // Update the payment record
         await sql`
@@ -44,10 +47,23 @@ export async function POST(req: NextRequest) {
 
         // If payment is successful, upgrade user plan
         if (dbStatus === 'success') {
+            console.log('Payment successful, upgrading user plan for:', payment.user_email);
+
             const userRes = await getUserByEmail(payment.user_email);
+            console.log('User lookup result:', userRes);
+
             if (userRes.success && userRes.user) {
-                await updateUserPlanAndCredits(userRes.user.id, "pro", 100);
-                console.log('User plan upgraded for:', payment.user_email);
+                console.log('Upgrading user plan:', userRes.user.id, 'to pro with 100 credits');
+                const updateResult = await updateUserPlanAndCredits(userRes.user.id, "pro", 100);
+                console.log('Plan upgrade result:', updateResult);
+
+                if (updateResult.success) {
+                    console.log('User plan upgraded successfully for:', payment.user_email);
+                } else {
+                    console.error('Failed to upgrade user plan:', updateResult.error);
+                }
+            } else {
+                console.error('Failed to find user for plan upgrade:', userRes.error);
             }
         }
 

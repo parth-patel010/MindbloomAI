@@ -119,6 +119,8 @@ export async function GET(req: NextRequest) {
 export async function PUT(req: NextRequest) {
     try {
         const { order_id } = await req.json();
+        console.log('Checking order status for:', order_id);
+
         if (!order_id) {
             return NextResponse.json({ error: "Missing order_id" }, { status: 400 });
         }
@@ -128,6 +130,8 @@ export async function PUT(req: NextRequest) {
             order_id: order_id
         });
 
+        console.log('Payment gateway status response:', statusResponse);
+
         // Update database status based on payment gateway response
         let dbStatus = 'pending';
         if (statusResponse.status === 'COMPLETED' && statusResponse.result?.status === 'SUCCESS') {
@@ -136,11 +140,48 @@ export async function PUT(req: NextRequest) {
             dbStatus = 'failed';
         }
 
+        console.log(`Updating database status to: ${dbStatus}`);
+
         await sql`
             UPDATE payment_gateway 
             SET status = ${dbStatus}
             WHERE order_id = ${order_id}
         `;
+
+        // If payment is successful, also upgrade user plan
+        if (dbStatus === 'success') {
+            console.log('Payment successful, upgrading user plan via status check');
+
+            // Get user email from payment record
+            const paymentRecord = await sql`
+                SELECT user_email FROM payment_gateway 
+                WHERE order_id = ${order_id}
+            `;
+
+            if (paymentRecord.length > 0) {
+                const userEmail = paymentRecord[0].user_email;
+                console.log('Found user email for plan upgrade:', userEmail);
+
+                const userRes = await getUserByEmail(userEmail);
+                console.log('User lookup result:', userRes);
+
+                if (userRes.success && userRes.user) {
+                    console.log('Upgrading user plan:', userRes.user.id, 'to pro with 100 credits');
+                    const updateResult = await updateUserPlanAndCredits(userRes.user.id, "pro", 100);
+                    console.log('Plan upgrade result:', updateResult);
+
+                    if (updateResult.success) {
+                        console.log('User plan upgraded successfully for:', userEmail);
+                    } else {
+                        console.error('Failed to upgrade user plan:', updateResult.error);
+                    }
+                } else {
+                    console.error('Failed to find user for plan upgrade:', userRes.error);
+                }
+            } else {
+                console.error('No payment record found for order_id:', order_id);
+            }
+        }
 
         return NextResponse.json({
             success: true,

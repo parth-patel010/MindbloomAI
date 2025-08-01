@@ -3,11 +3,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/lib/auth";
+import { usePlan } from "@/lib/plan-context";
 import { Sparkles, CheckCircle, XCircle, Clock, ExternalLink, RefreshCw } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 
 export default function PaymentGateway({ onBack }) {
     const { user } = useAuth();
+    const { refreshPlan } = usePlan();
     const searchParams = useSearchParams();
     const [phone, setPhone] = useState("");
     const [transaction, setTransaction] = useState(null);
@@ -103,6 +105,8 @@ export default function PaymentGateway({ onBack }) {
 
                 if (data.status === 'success') {
                     alert("Payment successful! Your plan has been upgraded to Pro.");
+                    // Refresh plan context to show updated plan
+                    await refreshPlan();
                     // Clear the transaction to show payment form again
                     setTimeout(() => {
                         setTransaction(null);

@@ -10,7 +10,7 @@ const checkOrderSDK = new CheckOrderStatusSDK('https://vision2submit.com');
 // Payment gateway configuration
 const PAYMENT_CONFIG = {
     user_token: process.env.PAYMENT_USER_TOKEN || '2e14002188f1ae07426c32655ddee9af',
-    amount: '1', // Amount in INR
+    amount: '99', // Amount in INR
     redirect_url: 'https://mindbloomai.vercel.app/payment-gateway',
 };
 

@@ -154,7 +154,7 @@ export default function PaymentGateway({ onBack }) {
                             <div className="text-center mb-4">
                                 <h3 className="text-lg font-semibold text-gray-800">Upgrade to Pro Plan</h3>
                                 <p className="text-sm text-gray-600">Get unlimited access to all features</p>
-                                <p className="text-2xl font-bold text-orange-600 mt-2">₹1.00</p>
+                                <p className="text-2xl font-bold text-orange-600 mt-2">₹99.00</p>
                             </div>
                             <Input
                                 type="tel"
@@ -169,7 +169,7 @@ export default function PaymentGateway({ onBack }) {
                                 disabled={!phone || loading}
                                 className="w-full max-w-xs bg-gradient-to-r from-yellow-500 to-orange-600 text-white shadow-lg rounded-xl"
                             >
-                                {loading ? "Creating Payment..." : "Pay ₹1.00"}
+                                {loading ? "Creating Payment..." : "Pay ₹99.00"}
                             </Button>
                         </>
                     ) : (

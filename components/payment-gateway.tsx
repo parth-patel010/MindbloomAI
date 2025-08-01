@@ -4,9 +4,11 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/lib/auth";
 import { Sparkles, CheckCircle, XCircle, Clock, ExternalLink, RefreshCw } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 
 export default function PaymentGateway({ onBack }) {
     const { user } = useAuth();
+    const searchParams = useSearchParams();
     const [phone, setPhone] = useState("");
     const [transaction, setTransaction] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -18,6 +20,23 @@ export default function PaymentGateway({ onBack }) {
             fetchRecentTransactions();
         }
     }, [user]);
+
+    // Check for redirect from payment gateway
+    useEffect(() => {
+        const orderId = searchParams.get('order_id');
+        const status = searchParams.get('status');
+
+        if (orderId) {
+            // User returned from payment gateway
+            checkPaymentStatus(orderId);
+
+            // Clear URL parameters
+            const url = new URL(window.location);
+            url.searchParams.delete('order_id');
+            url.searchParams.delete('status');
+            window.history.replaceState({}, '', url);
+        }
+    }, [searchParams]);
 
     const fetchRecentTransactions = async () => {
         try {
@@ -83,7 +102,11 @@ export default function PaymentGateway({ onBack }) {
                 fetchRecentTransactions();
 
                 if (data.status === 'success') {
-                    alert("Payment successful! Your plan has been upgraded.");
+                    alert("Payment successful! Your plan has been upgraded to Pro.");
+                    // Clear the transaction to show payment form again
+                    setTimeout(() => {
+                        setTransaction(null);
+                    }, 3000);
                 } else if (data.status === 'failed') {
                     alert("Payment failed. Please try again.");
                 }
@@ -100,6 +123,11 @@ export default function PaymentGateway({ onBack }) {
         if (paymentUrl) {
             window.open(paymentUrl, '_blank');
         }
+    };
+
+    const resetTransaction = () => {
+        setTransaction(null);
+        setPhone("");
     };
 
     return (
@@ -174,6 +202,28 @@ export default function PaymentGateway({ onBack }) {
                                         >
                                             <RefreshCw className={`h-4 w-4 mr-2 ${checkingStatus ? 'animate-spin' : ''}`} />
                                             {checkingStatus ? "Checking..." : "Check Status"}
+                                        </Button>
+                                    </div>
+                                )}
+
+                                {transaction.status === "success" && (
+                                    <div className="mt-4">
+                                        <Button
+                                            onClick={resetTransaction}
+                                            className="w-full bg-green-600 hover:bg-green-700 text-white"
+                                        >
+                                            Make Another Payment
+                                        </Button>
+                                    </div>
+                                )}
+
+                                {transaction.status === "failed" && (
+                                    <div className="mt-4">
+                                        <Button
+                                            onClick={resetTransaction}
+                                            className="w-full bg-red-600 hover:bg-red-700 text-white"
+                                        >
+                                            Try Again
                                         </Button>
                                     </div>
                                 )}

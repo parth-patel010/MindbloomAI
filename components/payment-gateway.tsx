@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/lib/auth";
-import { Sparkles, CheckCircle, XCircle, Clock } from "lucide-react";
+import { Sparkles, CheckCircle, XCircle, Clock, ExternalLink, RefreshCw } from "lucide-react";
 
 export default function PaymentGateway({ onBack }) {
     const { user } = useAuth();
@@ -11,37 +11,95 @@ export default function PaymentGateway({ onBack }) {
     const [transaction, setTransaction] = useState(null);
     const [loading, setLoading] = useState(false);
     const [recent, setRecent] = useState([]);
+    const [checkingStatus, setCheckingStatus] = useState(false);
 
     useEffect(() => {
         if (user?.email) {
-            fetch(`/api/payment-gateway?user_email=${encodeURIComponent(user.email)}`)
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) setRecent(data.transactions);
-                });
+            fetchRecentTransactions();
         }
     }, [user]);
 
+    const fetchRecentTransactions = async () => {
+        try {
+            const res = await fetch(`/api/payment-gateway?user_email=${encodeURIComponent(user.email)}`);
+            const data = await res.json();
+            if (data.success) setRecent(data.transactions);
+        } catch (error) {
+            console.error('Error fetching transactions:', error);
+        }
+    };
+
     const handlePayment = async () => {
         setLoading(true);
-        const res = await fetch("/api/payment-gateway", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                user_email: user.email,
-                user_name: user.name,
-                phone_number: phone,
-            }),
-        });
-        const data = await res.json();
-        setTransaction({ ...data, user_email: user.email, user_name: user.name, phone_number: phone, status: "pending", id: data.id });
-        setLoading(false);
-        // Refresh recent transactions
-        fetch(`/api/payment-gateway?user_email=${encodeURIComponent(user.email)}`)
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) setRecent(data.transactions);
+        try {
+            const res = await fetch("/api/payment-gateway", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    user_email: user.email,
+                    user_name: user.name,
+                    phone_number: phone,
+                }),
             });
+            const data = await res.json();
+
+            if (data.success) {
+                setTransaction({
+                    ...data,
+                    user_email: user.email,
+                    user_name: user.name,
+                    phone_number: phone,
+                    status: "pending"
+                });
+                // Redirect to payment gateway
+                if (data.payment_url) {
+                    window.open(data.payment_url, '_blank');
+                }
+            } else {
+                alert(data.error || "Failed to create payment");
+            }
+        } catch (error) {
+            console.error('Payment error:', error);
+            alert("Failed to process payment");
+        } finally {
+            setLoading(false);
+            fetchRecentTransactions();
+        }
+    };
+
+    const checkPaymentStatus = async (orderId) => {
+        setCheckingStatus(true);
+        try {
+            const res = await fetch("/api/payment-gateway", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ order_id: orderId }),
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                // Update the transaction status
+                setTransaction(prev => prev ? { ...prev, status: data.status } : null);
+                fetchRecentTransactions();
+
+                if (data.status === 'success') {
+                    alert("Payment successful! Your plan has been upgraded.");
+                } else if (data.status === 'failed') {
+                    alert("Payment failed. Please try again.");
+                }
+            }
+        } catch (error) {
+            console.error('Status check error:', error);
+            alert("Failed to check payment status");
+        } finally {
+            setCheckingStatus(false);
+        }
+    };
+
+    const openPaymentUrl = (paymentUrl) => {
+        if (paymentUrl) {
+            window.open(paymentUrl, '_blank');
+        }
     };
 
     return (
@@ -61,6 +119,11 @@ export default function PaymentGateway({ onBack }) {
                 <CardContent className="p-6 sm:p-8 space-y-6 flex flex-col items-center">
                     {!transaction ? (
                         <>
+                            <div className="text-center mb-4">
+                                <h3 className="text-lg font-semibold text-gray-800">Upgrade to Pro Plan</h3>
+                                <p className="text-sm text-gray-600">Get unlimited access to all features</p>
+                                <p className="text-2xl font-bold text-orange-600 mt-2">₹1.00</p>
+                            </div>
                             <Input
                                 type="tel"
                                 placeholder="Enter your phone number"
@@ -74,7 +137,7 @@ export default function PaymentGateway({ onBack }) {
                                 disabled={!phone || loading}
                                 className="w-full max-w-xs bg-gradient-to-r from-yellow-500 to-orange-600 text-white shadow-lg rounded-xl"
                             >
-                                {loading ? "Processing..." : "Submit"}
+                                {loading ? "Creating Payment..." : "Pay ₹1.00"}
                             </Button>
                         </>
                     ) : (
@@ -84,6 +147,7 @@ export default function PaymentGateway({ onBack }) {
                                 <div className="text-sm text-gray-600">Name: {transaction.user_name}</div>
                                 <div className="text-sm text-gray-600">Email: {transaction.user_email}</div>
                                 <div className="text-sm text-gray-600">Phone: {transaction.phone_number}</div>
+                                <div className="text-sm text-gray-600">Order ID: {transaction.order_id}</div>
                                 <div className="flex items-center justify-center mt-2">
                                     {transaction.status === "pending" && <Clock className="text-yellow-500 mr-2" />}
                                     {transaction.status === "success" && <CheckCircle className="text-green-500 mr-2" />}
@@ -92,9 +156,31 @@ export default function PaymentGateway({ onBack }) {
                                         {transaction.status}
                                     </span>
                                 </div>
+
+                                {transaction.payment_url && transaction.status === "pending" && (
+                                    <div className="mt-4 space-y-2">
+                                        <Button
+                                            onClick={() => openPaymentUrl(transaction.payment_url)}
+                                            className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                                        >
+                                            <ExternalLink className="h-4 w-4 mr-2" />
+                                            Complete Payment
+                                        </Button>
+                                        <Button
+                                            onClick={() => checkPaymentStatus(transaction.order_id)}
+                                            disabled={checkingStatus}
+                                            variant="outline"
+                                            className="w-full"
+                                        >
+                                            <RefreshCw className={`h-4 w-4 mr-2 ${checkingStatus ? 'animate-spin' : ''}`} />
+                                            {checkingStatus ? "Checking..." : "Check Status"}
+                                        </Button>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     )}
+
                     {/* Recent Transactions */}
                     <div className="w-full max-w-xs mt-8">
                         <div className="font-semibold mb-2 text-gray-700">Recent Transactions</div>
@@ -110,6 +196,18 @@ export default function PaymentGateway({ onBack }) {
                                         <span className="ml-auto text-xs text-gray-400">{new Date(tx.created_at).toLocaleString()}</span>
                                     </div>
                                     <div className="text-xs text-gray-600 mt-1">Phone: {tx.phone_number}</div>
+                                    {tx.order_id && <div className="text-xs text-gray-500">Order: {tx.order_id}</div>}
+                                    {tx.payment_url && tx.status === "pending" && (
+                                        <Button
+                                            onClick={() => openPaymentUrl(tx.payment_url)}
+                                            size="sm"
+                                            variant="outline"
+                                            className="mt-2 text-xs"
+                                        >
+                                            <ExternalLink className="h-3 w-3 mr-1" />
+                                            Complete Payment
+                                        </Button>
+                                    )}
                                 </div>
                             ))}
                         </div>

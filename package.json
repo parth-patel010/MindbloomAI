@@ -48,7 +48,6 @@
     "crypto": "latest",
     "date-fns": "4.1.0",
     "embla-carousel-react": "8.5.1",
-    "express": "^5.1.0",
     "framer-motion": "^12.23.9",
     "input-otp": "1.4.1",
     "jspdf": "^3.0.1",

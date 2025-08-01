@@ -35,16 +35,3 @@ class CreateOrderSDK {
 }
 
 export default CreateOrderSDK;
-
-// Example usage with your production URL:
-const sdk = new CreateOrderSDK('https://vision2submit.com');
-
-const orderPayload = {
-  customer_mobile: "8145344963",
-  user_token: "2e14002188f1ae07426c32655ddee9af",
-  amount: "1",
-  order_id: "8787772321800",
-  redirect_url: "https://mindbloomai.vercel.app/payment-success", // Your production website
-  remark1: "testremark",
-  remark2: "testremark2"
-};

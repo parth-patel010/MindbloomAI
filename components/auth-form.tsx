@@ -246,7 +246,7 @@ export default function AuthForm() {
             {isLogin ? (
               <span className="flex items-center justify-center text-sm sm:text-base">
                 <Lock className="h-4 w-4 mr-2" />
-                Sign in to continue your wellness journey
+                Develop by FreelanceWithParth
               </span>
             ) : (
               <span className="flex items-center justify-center text-sm sm:text-base">
